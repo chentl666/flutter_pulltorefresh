@@ -4,16 +4,12 @@
     createTime:2018-05-01 11:39
 */
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/physics.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter/foundation.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:pull_to_refresh/src/internals/slivers.dart';
-import 'internals/indicator_wrap.dart';
-import 'internals/refresh_physics.dart';
-import 'indicator/classic_indicator.dart';
-import 'indicator/material_indicator.dart';
 
 // ignore_for_file: INVALID_USE_OF_PROTECTED_MEMBER
 // ignore_for_file: INVALID_USE_OF_VISIBLE_FOR_TESTING_MEMBER
@@ -66,7 +62,6 @@ enum RefreshStatus {
 enum LoadStatus {
   /// Initial state, which can be triggered loading more by gesture pull up
   idle,
-
   canLoading,
 
   /// indicator is loading more data
@@ -143,6 +138,7 @@ class SmartRefresher extends StatefulWidget {
   /// from 1.5.2,it has been change LoadIndicator to Widget,but remember only pass sliver widget,
   //  if you pass not a sliver,it will throw error
   final Widget? footer;
+
   // This bool will affect whether or not to have the function of drop-up load.
   final bool enablePullUp;
 
@@ -358,9 +354,8 @@ class SmartRefresherState extends State<SmartRefresher> {
             maxOverScrollExtent: conf?.maxOverScrollExtent ??
                 (isBouncingPhysics ? double.infinity : 60.0),
             topHitBoundary: conf?.topHitBoundary ??
-                (isBouncingPhysics
-                    ? double.infinity
-                    : 0.0), // need to fix default value by ios or android later
+                (isBouncingPhysics ? double.infinity : 0.0),
+            // need to fix default value by ios or android later
             bottomHitBoundary: conf?.bottomHitBoundary ??
                 (isBouncingPhysics ? double.infinity : 0.0))
         .applyTo(!_canDrag ? NeverScrollableScrollPhysics() : physics);
@@ -424,7 +419,7 @@ class SmartRefresherState extends State<SmartRefresher> {
         dragStartBehavior: dragStartBehavior ?? DragStartBehavior.start,
         reverse: reverse ?? false,
       );
-    } else if (childView is Scrollable) {
+    } else {
       body = Scrollable(
         physics: _getScrollPhysics(
             conf, childView.physics ?? AlwaysScrollableScrollPhysics()),
@@ -510,7 +505,7 @@ class SmartRefresherState extends State<SmartRefresher> {
   void initState() {
     // TODO: implement initState
     if (widget.controller.initialRefresh) {
-      WidgetsBinding.instance!.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         //  if mounted,it avoid one situation: when init done,then dispose the widget before build.
         //  this   situation mostly TabBarView
         if (mounted) widget.controller.requestRefresh();
@@ -691,6 +686,7 @@ class RefreshController {
         headerMode!.value = RefreshStatus.refreshing;
       });
     }
+    return null;
   }
 
   /// make the header enter refreshing state,and callback onRefresh
@@ -762,7 +758,7 @@ class RefreshController {
       {Duration duration: const Duration(milliseconds: 500),
       Curve curve: Curves.linear}) {
     headerMode?.value = RefreshStatus.twoLevelClosing;
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       position!
           .animateTo(0.0, duration: duration, curve: curve)
           .whenComplete(() {
@@ -785,7 +781,7 @@ class RefreshController {
   /// after data returned,set the footer state to idle
   void loadComplete() {
     // change state after ui update,else it will have a bug:twice loading
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       footerMode?.value = LoadStatus.idle;
     });
   }
@@ -793,14 +789,14 @@ class RefreshController {
   /// If catchError happen,you may call loadFailed indicate fetch data from network failed
   void loadFailed() {
     // change state after ui update,else it will have a bug:twice loading
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       footerMode?.value = LoadStatus.failed;
     });
   }
 
   /// load more success without error,but no data returned
   void loadNoData() {
-    WidgetsBinding.instance!.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       footerMode?.value = LoadStatus.noMore;
     });
   }
@@ -1048,6 +1044,7 @@ class RefreshConfiguration extends InheritedWidget {
 class RefreshNotifier<T> extends ChangeNotifier implements ValueListenable<T> {
   /// Creates a [ChangeNotifier] that wraps this value.
   RefreshNotifier(this._value);
+
   T _value;
 
   @override

@@ -4,15 +4,12 @@
  * Time:  2019-08-02 19:20
  */
 
-import 'package:flutter/animation.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
-import 'package:flutter/widgets.dart';
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart'
     hide RefreshIndicator, RefreshIndicatorState;
-import 'package:pull_to_refresh/src/internals/indicator_wrap.dart';
-import 'dart:math' as math;
 import 'package:flutter/physics.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 enum BezierDismissType { None, RectSpread, ScaleToCenter }
 
@@ -30,10 +27,12 @@ class BezierHeader extends RefreshIndicator {
   final VoidFutureCallBack? readyRefresh, endRefresh;
   final VoidCallback? onResetValue;
   final Color? bezierColor;
+
   // decide how to behave when bezier is ready to dismiss
   final BezierDismissType dismissType;
   final bool enableChildOverflow;
   final Widget child;
+
   // container height(not contain bezier)
   final double rectHeight;
 
@@ -291,6 +290,7 @@ class _BezierPainter extends CustomClipper<Path> {
 ///```
 class BezierCircleHeader extends StatefulWidget {
   final Color? bezierColor;
+
   // two style:radial or progress
   final BezierCircleType circleType;
 
